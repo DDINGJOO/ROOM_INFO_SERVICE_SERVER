@@ -12,16 +12,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public abstract class StringAttribute {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "attribute_id")
 	private Long attributeId;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id", nullable = false)
 	private RoomInfo roomInfo;
-
+	
 	@Column(name = "contents", nullable = false, length = 1000)
 	private String contents;
 }
