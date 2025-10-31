@@ -64,6 +64,7 @@ public class RoomInfo {
 	@Builder.Default
 	private List<RoomOptionsMapper> roomOptions = new ArrayList<>();
 	
+	
 	// 컬렉션 캡슐화 - 불변 컬렉션 반환
 	public List<FurtherDetail> getFurtherDetails() {
 		return Collections.unmodifiableList(furtherDetails);
