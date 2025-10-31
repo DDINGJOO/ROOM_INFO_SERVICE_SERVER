@@ -4,12 +4,21 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("CAUTION")
 @Getter
-@Setter
 @NoArgsConstructor
 public class CautionDetail extends StringAttribute {
+	
+	private static final int MAX_CAUTION_DETAILS = 8;
+	
+	public CautionDetail(String contents) {
+		super(contents);
+	}
+	
+	@Override
+	public int getMaxLimit() {
+		return MAX_CAUTION_DETAILS;
+	}
 }
