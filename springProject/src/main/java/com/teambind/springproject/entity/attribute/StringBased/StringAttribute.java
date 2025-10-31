@@ -1,4 +1,4 @@
-package com.teambind.springproject.entity.attribute;
+package com.teambind.springproject.entity.attribute.StringBased;
 
 import com.teambind.springproject.entity.RoomInfo;
 import jakarta.persistence.*;

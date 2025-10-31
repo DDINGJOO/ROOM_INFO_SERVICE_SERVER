@@ -1,4 +1,4 @@
-package com.teambind.springproject.entity;
+package com.teambind.springproject.entity.attribute.keyword;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
