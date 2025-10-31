@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.teambind'
 version = '0.0.1-SNAPSHOT'
-description = 'springProject'
+description = 'room_info_service_server'
 
 java {
     toolchain {
