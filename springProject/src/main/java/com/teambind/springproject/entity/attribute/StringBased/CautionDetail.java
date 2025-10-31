@@ -1,4 +1,4 @@
-package com.teambind.springproject.entity.attribute;
+package com.teambind.springproject.entity.attribute.StringBased;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

@@ -1,9 +1,11 @@
 package com.teambind.springproject.entity;
 
-import com.teambind.springproject.entity.attribute.CautionDetail;
-import com.teambind.springproject.entity.attribute.FurtherDetail;
-import com.teambind.springproject.entity.attribute.Keyword;
-import com.teambind.springproject.entity.attribute.StringAttribute;
+import com.teambind.springproject.entity.attribute.StringBased.CautionDetail;
+import com.teambind.springproject.entity.attribute.StringBased.FurtherDetail;
+import com.teambind.springproject.entity.attribute.StringBased.Keyword;
+import com.teambind.springproject.entity.attribute.StringBased.StringAttribute;
+import com.teambind.springproject.entity.attribute.image.RoomImage;
+import com.teambind.springproject.entity.attribute.keyword.RoomOptionsMapper;
 import com.teambind.springproject.entity.enums.Status;
 import com.teambind.springproject.entity.enums.TimeSlot;
 import jakarta.persistence.*;

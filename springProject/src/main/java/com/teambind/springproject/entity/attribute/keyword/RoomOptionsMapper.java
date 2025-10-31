@@ -1,6 +1,7 @@
-package com.teambind.springproject.entity;
+package com.teambind.springproject.entity.attribute.keyword;
 
-import com.teambind.springproject.entity.attribute.Keyword;
+import com.teambind.springproject.entity.RoomInfo;
+import com.teambind.springproject.entity.attribute.StringBased.Keyword;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,6 +1,7 @@
-package com.teambind.springproject.entity;
+package com.teambind.springproject.entity.attribute.image;
 
 
+import com.teambind.springproject.entity.RoomInfo;
 import jakarta.persistence.*;
 import lombok.*;
 
