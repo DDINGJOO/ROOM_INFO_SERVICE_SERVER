@@ -12,15 +12,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class RoomImage {
-
+	
 	@Id
 	@Column(name = "image_id", length = 100)
 	private String imageId;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "room_id", nullable = false)
 	private RoomInfo roomInfo;
-
+	
 	@Column(name = "image_url", nullable = false, length = 500)
 	private String imageUrl;
 }
