@@ -4,12 +4,21 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @DiscriminatorValue("FURTHER")
 @Getter
-@Setter
 @NoArgsConstructor
 public class FurtherDetail extends StringAttribute {
+	
+	private static final int MAX_FURTHER_DETAILS = 7;
+	
+	public FurtherDetail(String contents) {
+		super(contents);
+	}
+	
+	@Override
+	public int getMaxLimit() {
+		return MAX_FURTHER_DETAILS;
+	}
 }
