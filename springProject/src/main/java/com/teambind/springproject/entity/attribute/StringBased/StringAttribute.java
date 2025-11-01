@@ -12,7 +12,7 @@ import lombok.Setter;
 @DiscriminatorColumn(name = "attribute_type")
 @Getter
 public abstract class StringAttribute {
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "attribute_id")

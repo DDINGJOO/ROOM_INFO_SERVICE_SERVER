@@ -27,39 +27,39 @@ import java.util.List;
 public class RoomInfo {
 	
 	private static final int MAX_ROOM_IMAGES = 10;
-
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "room_id")
 	private Long roomId;
-
+	
 	@Column(name = "room_name", nullable = false)
 	private String roomName;
-
+	
 	// 해당 룸을 관리하는 공간 ID
 	@Column(name = "place_id", nullable = false)
 	private Long placeId;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private Status status;
-
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "time_slot")
 	private TimeSlot timeSlot;
-
+	
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<FurtherDetail> furtherDetails = new ArrayList<>();
-
+	
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<CautionDetail> cautionDetails = new ArrayList<>();
-
+	
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<RoomImage> roomImages = new ArrayList<>();
-
+	
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<RoomOptionsMapper> roomOptions = new ArrayList<>();

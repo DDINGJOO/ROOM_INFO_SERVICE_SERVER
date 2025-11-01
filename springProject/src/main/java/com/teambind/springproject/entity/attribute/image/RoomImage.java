@@ -12,7 +12,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 public class RoomImage {
-
+	
 	@Id
 	@Column(name = "image_id", length = 100)
 	private String imageId;

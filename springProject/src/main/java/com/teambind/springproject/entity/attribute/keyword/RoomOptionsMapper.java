@@ -21,7 +21,7 @@ public class RoomOptionsMapper {
 	@MapsId("roomId")
 	@JoinColumn(name = "room_id", nullable = false)
 	private RoomInfo roomInfo;
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("keywordId")
 	@JoinColumn(name = "keyword_id", nullable = false)
