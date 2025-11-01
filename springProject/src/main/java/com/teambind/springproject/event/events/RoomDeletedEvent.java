@@ -1,5 +1,6 @@
 package com.teambind.springproject.event.events;
 
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class RoomCreatedEvent extends Event {
+public class RoomDeletedEvent extends Event {
 	private Long roomId;
 	
-	public RoomCreatedEvent(Long roomId) {
-		super("room-created");
+	public RoomDeletedEvent(Long roomId) {
+		super("room-deleted");
 		this.roomId = roomId;
 	}
 }
