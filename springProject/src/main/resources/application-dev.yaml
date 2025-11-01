@@ -1,0 +1,77 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29091,localhost:29092,localhost:29093
+    producer:
+      retries: 3
+      batch-size: 16384
+      buffer-memory: 33554432
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    consumer:
+      group-id: room-consumer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+    listener:
+      ack-mode: record
+
+
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/room
+    username: user
+    password: "pass123#"
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 20000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      auto-commit: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  data:
+    redis:
+      repositories:
+        enabled: false
+      host: localhost
+      port: 6379
+
+
+
+  sql:
+    init:
+      mode: never
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.teambind: DEBUG
+    org.springframework: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+
+
+
+
