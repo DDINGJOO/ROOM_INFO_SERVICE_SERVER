@@ -24,16 +24,18 @@ public class RoomCommandService {
 		RoomInfo roomInfo = roomMapper.toEntity(command);
 		roomCommandRepository.save(roomInfo);
 		eventPublisher.publish(
-				new RoomCreatedEvent(roomInfo.getRoomId())
+				new RoomCreatedEvent(roomInfo.getRoomId(), roomInfo.getPlaceId(), roomInfo.getTimeSlot())
 		);
 		return roomInfo.getRoomId();
 	}
 	
 	@Transactional
 	public Long deleteRoom(Long roomId) {
+		RoomInfo roomInfo = roomCommandRepository.findById(roomId)
+				.orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
 		roomCommandRepository.deleteById(roomId);
 		eventPublisher.publish(
-				new RoomCreatedEvent(roomId)
+				new RoomCreatedEvent(roomInfo.getRoomId(), roomInfo.getPlaceId(), roomInfo.getTimeSlot())
 		);
 		return roomId;
 	}
