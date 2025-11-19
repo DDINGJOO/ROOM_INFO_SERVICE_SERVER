@@ -26,25 +26,33 @@ public class RoomMapper {
 				.placeId(command.getPlaceId())
 				.roomName(command.getRoomName())
 				.status(Status.PENDING)
+				.timeSlot(command.getTimeSlot())
 				.build();
 		
-		command.getCautionDetails().forEach(caution ->
-				roomInfo.addCautionDetail(new CautionDetail(caution)));
-		command.getFurtherDetails().forEach(furtherDetail ->
-				roomInfo.addFurtherDetail(new FurtherDetail(furtherDetail)));
+		if (command.getCautionDetails() != null) {
+			command.getCautionDetails().forEach(caution ->
+					roomInfo.addCautionDetail(new CautionDetail(caution)));
+		}
 		
-		List<Keyword> keywords = new ArrayList<>();
-		command.getKeywordIds().forEach(keywordId ->
-		{
-			if (keywordMap.get(keywordId) != null)
-				keywords.add(keywordMap.get(keywordId));
-			else {
-				// TODO impl CustomExceptions
-				throw new IllegalArgumentException("Keyword with ID " + keywordId + " not found");
-			}
-		});
+		if (command.getFurtherDetails() != null) {
+			command.getFurtherDetails().forEach(furtherDetail ->
+					roomInfo.addFurtherDetail(new FurtherDetail(furtherDetail)));
+		}
 		
-		keywords.forEach(roomInfo::addKeyword);
+		if (command.getKeywordIds() != null) {
+			List<Keyword> keywords = new ArrayList<>();
+			command.getKeywordIds().forEach(keywordId ->
+			{
+				if (keywordMap.get(keywordId) != null)
+					keywords.add(keywordMap.get(keywordId));
+				else {
+					// TODO impl CustomExceptions
+					throw new IllegalArgumentException("Keyword with ID " + keywordId + " not found");
+				}
+			});
+			keywords.forEach(roomInfo::addKeyword);
+		}
+
 		return roomInfo;
 	}
 }
