@@ -1,7 +1,7 @@
 package com.teambind.springproject.controller;
 
 import com.teambind.springproject.dto.query.RoomSearchQuery;
-import com.teambind.springproject.dto.request.RoomSearchRequest;
+import com.teambind.springproject.dto.response.KeywordResponse;
 import com.teambind.springproject.dto.response.RoomDetailResponse;
 import com.teambind.springproject.dto.response.RoomSimpleResponse;
 import com.teambind.springproject.service.RoomQueryService;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/rooms")
@@ -50,5 +51,11 @@ public class RoomQueryController {
 	public ResponseEntity<List<RoomDetailResponse>> getRoomsByIds(@RequestParam List<Long> ids) {
 		List<RoomDetailResponse> responses = roomQueryService.findRoomsByIds(ids);
 		return ResponseEntity.ok(responses);
+	}
+	
+	@GetMapping("/keywords")
+	public ResponseEntity<Map<Long, KeywordResponse>> getKeywordMap() {
+		Map<Long, KeywordResponse> keywordMap = roomQueryService.getKeywordMap();
+		return ResponseEntity.ok(keywordMap);
 	}
 }

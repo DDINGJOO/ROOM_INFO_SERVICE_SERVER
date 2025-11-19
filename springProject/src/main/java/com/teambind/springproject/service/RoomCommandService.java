@@ -3,6 +3,7 @@ package com.teambind.springproject.service;
 import com.teambind.springproject.dto.command.RoomCreateCommand;
 import com.teambind.springproject.entity.RoomInfo;
 import com.teambind.springproject.event.events.RoomCreatedEvent;
+import com.teambind.springproject.event.events.RoomDeletedEvent;
 import com.teambind.springproject.event.publisher.EventPublisher;
 import com.teambind.springproject.mapper.RoomMapper;
 import com.teambind.springproject.repository.RoomCommandRepository;
@@ -35,7 +36,7 @@ public class RoomCommandService {
 				.orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
 		roomCommandRepository.deleteById(roomId);
 		eventPublisher.publish(
-				new RoomCreatedEvent(roomInfo.getRoomId(), roomInfo.getPlaceId(), roomInfo.getTimeSlot())
+				new RoomDeletedEvent(roomInfo.getRoomId())
 		);
 		return roomId;
 	}

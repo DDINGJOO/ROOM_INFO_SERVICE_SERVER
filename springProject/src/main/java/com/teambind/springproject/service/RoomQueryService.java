@@ -1,16 +1,20 @@
 package com.teambind.springproject.service;
 
 import com.teambind.springproject.dto.query.RoomSearchQuery;
+import com.teambind.springproject.dto.response.KeywordResponse;
 import com.teambind.springproject.dto.response.RoomDetailResponse;
 import com.teambind.springproject.dto.response.RoomSimpleResponse;
 import com.teambind.springproject.entity.RoomInfo;
 import com.teambind.springproject.mapper.RoomQueryMapper;
 import com.teambind.springproject.repository.RoomQueryRepository;
+import com.teambind.springproject.util.data.InitialTableMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +62,16 @@ public class RoomQueryService {
 		RoomInfo room = roomQueryRepository.findByIdWithDetails(roomId)
 				.orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
 		return roomQueryMapper.toDetailResponse(room);
+	}
+	
+	public Map<Long, KeywordResponse> getKeywordMap() {
+		return InitialTableMapper.keywordMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						entry -> Long.valueOf(entry.getKey()),
+						entry -> KeywordResponse.builder()
+								.keywordId(entry.getValue().getKeywordId())
+								.keyword(entry.getValue().getKeyword())
+								.build()
+				));
 	}
 }
