@@ -1,3 +1,6 @@
 .idea/
 springProject/.env
 springProject/.env.prod
+
+
+.claude/
