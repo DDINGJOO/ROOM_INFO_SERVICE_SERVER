@@ -46,7 +46,10 @@ public class RoomInfo {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "time_slot")
 	private TimeSlot timeSlot;
-	
+
+	@Column(name = "max_occupancy")
+	private Integer maxOccupancy;
+
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<FurtherDetail> furtherDetails = new ArrayList<>();
@@ -153,10 +156,21 @@ public class RoomInfo {
 			);
 		}
 	}
-	
+
 	private boolean hasKeyword(Keyword keyword) {
 		return roomOptions.stream()
 				.anyMatch(mapper -> mapper.getKeyword().getKeywordId().equals(keyword.getKeywordId()));
+	}
+
+	public void validateMaxOccupancy() {
+		if (maxOccupancy != null && maxOccupancy < 1) {
+			throw new IllegalArgumentException("최대 수용 인원은 1명 이상이어야 합니다.");
+		}
+	}
+
+	public void updateMaxOccupancy(Integer maxOccupancy) {
+		this.maxOccupancy = maxOccupancy;
+		validateMaxOccupancy();
 	}
 	
 	public int getRoomImageCount() {

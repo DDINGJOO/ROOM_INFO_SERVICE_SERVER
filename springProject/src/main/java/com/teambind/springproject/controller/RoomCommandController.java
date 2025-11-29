@@ -23,6 +23,7 @@ public class RoomCommandController {
 				.roomName(request.getRoomName())
 				.placeId(request.getPlaceId())
 				.timeSlot(request.getTimeSlot())
+				.maxOccupancy(request.getMaxOccupancy())
 				.furtherDetails(request.getFurtherDetails())
 				.cautionDetails(request.getCautionDetails())
 				.keywordIds(request.getKeywordIds())

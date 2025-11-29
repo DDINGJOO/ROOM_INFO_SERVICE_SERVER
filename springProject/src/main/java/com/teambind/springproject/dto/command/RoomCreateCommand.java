@@ -17,6 +17,7 @@ public class RoomCreateCommand {
 	private String roomName;
 	private Long placeId;
 	private TimeSlot timeSlot;
+	private Integer maxOccupancy;
 	private List<String> furtherDetails;
 	private List<String> cautionDetails;
 	private List<Long> keywordIds;

@@ -29,12 +29,14 @@ public class RoomQueryController {
 	public ResponseEntity<List<RoomSimpleResponse>> searchRooms(
 			@RequestParam(required = false) String roomName,
 			@RequestParam(required = false) List<Long> keywordIds,
-			@RequestParam(required = false) Long placeId
+			@RequestParam(required = false) Long placeId,
+			@RequestParam(required = false) Integer minOccupancy
 	) {
 		RoomSearchQuery query = RoomSearchQuery.builder()
 				.roomName(roomName)
 				.keywordIds(keywordIds)
 				.placeId(placeId)
+				.minOccupancy(minOccupancy)
 				.build();
 
 		List<RoomSimpleResponse> responses = roomQueryService.searchRooms(query);

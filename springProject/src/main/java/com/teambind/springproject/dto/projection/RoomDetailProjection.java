@@ -13,9 +13,11 @@ public interface RoomDetailProjection {
 	Long getPlaceId();
 	
 	Status getStatus();
-	
+
 	TimeSlot getTimeSlot();
-	
+
+	Integer getMaxOccupancy();
+
 	List<String> getFurtherDetails();
 	
 	List<String> getCautionDetails();

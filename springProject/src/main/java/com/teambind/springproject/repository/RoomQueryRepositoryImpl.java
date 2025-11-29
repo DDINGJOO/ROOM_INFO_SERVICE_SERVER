@@ -35,6 +35,7 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 							roomNameContains(query.getRoomName()),
 							placeIdEq(query.getPlaceId()),
 							roomIdsIn(query.getRoomIds()),
+							minOccupancyGoe(query.getMinOccupancy()),
 							roomOptionsMapper.keyword.keywordId.in(query.getKeywordIds())
 					)
 					.groupBy(roomInfo.roomId)
@@ -47,7 +48,8 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 					.where(
 							roomNameContains(query.getRoomName()),
 							placeIdEq(query.getPlaceId()),
-							roomIdsIn(query.getRoomIds())
+							roomIdsIn(query.getRoomIds()),
+							minOccupancyGoe(query.getMinOccupancy())
 					)
 					.fetch();
 		}
@@ -116,5 +118,9 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 		return roomIds != null && !roomIds.isEmpty()
 				? roomInfo.roomId.in(roomIds)
 				: null;
+	}
+
+	private BooleanExpression minOccupancyGoe(Integer minOccupancy) {
+		return minOccupancy != null ? roomInfo.maxOccupancy.goe(minOccupancy) : null;
 	}
 }

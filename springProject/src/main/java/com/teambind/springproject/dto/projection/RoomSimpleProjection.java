@@ -10,9 +10,11 @@ public interface RoomSimpleProjection {
 	String getRoomName();
 	
 	Long getPlaceId();
-	
+
 	TimeSlot getTimeSlot();
-	
+
+	Integer getMaxOccupancy();
+
 	List<String> getImageUrls();
 	
 	List<Long> getKeywordIds();

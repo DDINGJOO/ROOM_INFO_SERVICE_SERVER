@@ -27,6 +27,7 @@ public class RoomMapper {
 				.roomName(command.getRoomName())
 				.status(Status.PENDING)
 				.timeSlot(command.getTimeSlot())
+				.maxOccupancy(command.getMaxOccupancy())
 				.build();
 		
 		if (command.getCautionDetails() != null) {

@@ -17,4 +17,5 @@ public class RoomSearchQuery {
 	private List<Long> keywordIds;
 	private Long placeId;
 	private List<Long> roomIds;
+	private Integer minOccupancy;
 }

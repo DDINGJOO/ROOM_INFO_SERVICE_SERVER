@@ -1,6 +1,7 @@
 package com.teambind.springproject.dto.request;
 
 import com.teambind.springproject.entity.enums.TimeSlot;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -24,7 +25,10 @@ public class RoomCreateRequest {
 	private Long placeId;
 	
 	private TimeSlot timeSlot;
-	
+
+	@Min(value = 1, message = "최대 수용 인원은 1명 이상이어야 합니다.")
+	private Integer maxOccupancy;
+
 	@Size(max = 7, message = "추가 정보는 최대 7개까지 가능합니다.")
 	private List<String> furtherDetails;
 	

@@ -21,6 +21,7 @@ public class RoomQueryMapper {
 				.roomName(roomInfo.getRoomName())
 				.placeId(roomInfo.getPlaceId())
 				.timeSlot(roomInfo.getTimeSlot())
+				.maxOccupancy(roomInfo.getMaxOccupancy())
 				.imageUrls(
 						roomInfo.getRoomImages().stream()
 								.map(RoomImage::getImageUrl)
@@ -47,6 +48,7 @@ public class RoomQueryMapper {
 				.placeId(roomInfo.getPlaceId())
 				.status(roomInfo.getStatus())
 				.timeSlot(roomInfo.getTimeSlot())
+				.maxOccupancy(roomInfo.getMaxOccupancy())
 				.furtherDetails(
 						roomInfo.getFurtherDetails().stream()
 								.map(FurtherDetail::getContents)
