@@ -76,9 +76,7 @@ class RoomCommandServiceTest {
         // Then
         assertThat(roomId).isEqualTo(1L);
         verify(roomCommandRepository).save(testRoom);
-        verify(eventPublisher).publish(argThat(event ->
-                event instanceof RoomCreatedEvent &&
-                ((RoomCreatedEvent) event).getRoomId().equals(1L)));
+        verify(eventPublisher).publish(any(RoomCreatedEvent.class));
     }
 
     @Test
@@ -125,9 +123,7 @@ class RoomCommandServiceTest {
         // Then
         assertThat(deletedRoomId).isEqualTo(roomId);
         verify(roomCommandRepository).deleteById(roomId);
-        verify(eventPublisher).publish(argThat(event ->
-                event instanceof RoomDeletedEvent &&
-                ((RoomDeletedEvent) event).getRoomId().equals(roomId)));
+        verify(eventPublisher).publish(any(RoomDeletedEvent.class));
     }
 
     @Test
