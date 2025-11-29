@@ -1,7 +1,6 @@
 package com.teambind.springproject.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.teambind.springproject.config.TestConfig;
+import com.teambind.springproject.IntegrationTestBase;
 import com.teambind.springproject.dto.query.RoomSearchQuery;
 import com.teambind.springproject.entity.RoomInfo;
 import com.teambind.springproject.entity.enums.Status;
@@ -11,20 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("test")
 @Transactional
-@Import(TestConfig.class)
-class RoomQueryRepositoryMaxOccupancyTest {
+class RoomQueryRepositoryMaxOccupancyTest extends IntegrationTestBase {
 
     @PersistenceContext
     private EntityManager entityManager;
