@@ -48,7 +48,7 @@ class RoomControllerMaxOccupancyTest {
         RoomCreateRequest request = RoomCreateRequest.builder()
                 .roomName("Conference Room")
                 .placeId(100L)
-                .timeSlot(TimeSlot.MORNING)
+                .timeSlot(TimeSlot.HOUR)
                 .maxOccupancy(20)
                 .build();
 
@@ -70,7 +70,7 @@ class RoomControllerMaxOccupancyTest {
         RoomCreateRequest request = RoomCreateRequest.builder()
                 .roomName("Conference Room")
                 .placeId(100L)
-                .timeSlot(TimeSlot.MORNING)
+                .timeSlot(TimeSlot.HOUR)
                 .maxOccupancy(0)  // Invalid: less than 1
                 .build();
 
@@ -90,7 +90,7 @@ class RoomControllerMaxOccupancyTest {
         RoomCreateRequest request = RoomCreateRequest.builder()
                 .roomName("Conference Room")
                 .placeId(100L)
-                .timeSlot(TimeSlot.MORNING)
+                .timeSlot(TimeSlot.HOUR)
                 .maxOccupancy(null)  // Null is allowed
                 .build();
 

@@ -1,30 +1,50 @@
 package com.teambind.springproject.repository;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teambind.springproject.dto.query.RoomSearchQuery;
 import com.teambind.springproject.entity.RoomInfo;
 import com.teambind.springproject.entity.enums.Status;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@Import(RoomQueryRepositoryImpl.class)
-@TestPropertySource(properties = {
-        "spring.jpa.hibernate.ddl-auto=create-drop"
-})
+@ActiveProfiles("test")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import({RoomQueryRepositoryMaxOccupancyTest.TestConfig.class})
 class RoomQueryRepositoryMaxOccupancyTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
+    @Configuration
+    static class TestConfig {
+        @PersistenceContext
+        private EntityManager entityManager;
+
+        @Bean
+        public JPAQueryFactory jpaQueryFactory() {
+            return new JPAQueryFactory(entityManager);
+        }
+
+        @Bean
+        public RoomQueryRepository roomQueryRepository(JPAQueryFactory queryFactory) {
+            return new RoomQueryRepositoryImpl(queryFactory);
+        }
+    }
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private RoomQueryRepository roomQueryRepository;
@@ -41,7 +61,7 @@ class RoomQueryRepositoryMaxOccupancyTest {
                 .roomId(1L)
                 .roomName("Small Meeting Room")
                 .placeId(100L)
-                .status(Status.ACTIVE)
+                .status(Status.OPEN)
                 .maxOccupancy(4)
                 .build();
 
@@ -49,7 +69,7 @@ class RoomQueryRepositoryMaxOccupancyTest {
                 .roomId(2L)
                 .roomName("Medium Conference Room")
                 .placeId(100L)
-                .status(Status.ACTIVE)
+                .status(Status.OPEN)
                 .maxOccupancy(10)
                 .build();
 
@@ -57,7 +77,7 @@ class RoomQueryRepositoryMaxOccupancyTest {
                 .roomId(3L)
                 .roomName("Large Auditorium")
                 .placeId(100L)
-                .status(Status.ACTIVE)
+                .status(Status.OPEN)
                 .maxOccupancy(50)
                 .build();
 
@@ -65,7 +85,7 @@ class RoomQueryRepositoryMaxOccupancyTest {
                 .roomId(4L)
                 .roomName("Unknown Capacity Room")
                 .placeId(100L)
-                .status(Status.ACTIVE)
+                .status(Status.OPEN)
                 .maxOccupancy(null)
                 .build();
 
