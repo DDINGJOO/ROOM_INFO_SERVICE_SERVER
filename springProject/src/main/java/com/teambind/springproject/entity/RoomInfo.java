@@ -110,6 +110,49 @@ public class RoomInfo {
 	}
 	
 	// ===== RoomImage 관련 메서드 =====
+
+	/**
+	 * sequence를 지정하여 이미지를 추가합니다.
+	 * @param imageId 이미지 고유 식별자
+	 * @param imageUrl 이미지 URL
+	 * @param sequence 이미지 순서 (1부터 시작)
+	 */
+	public void addRoomImageWithSequence(String imageId, String imageUrl, Long sequence) {
+		if (imageId == null || imageUrl == null) {
+			throw new IllegalArgumentException("Cannot add image with null imageId or imageUrl");
+		}
+
+		if (roomImages.size() >= MAX_ROOM_IMAGES) {
+			throw new IllegalStateException(
+					String.format("방 이미지는 최대 %d개까지 추가할 수 있습니다.", MAX_ROOM_IMAGES)
+			);
+		}
+
+		if (sequence == null || sequence < 1) {
+			// sequence가 유효하지 않으면 자동 sequence 사용
+			sequence = (long) (roomImages.size() + 1);
+		}
+
+		RoomImage roomImage = new RoomImage(imageId, imageUrl, sequence, this);
+		roomImage.assignRoom(this);
+		roomImages.add(roomImage);
+	}
+
+	/**
+	 * 자동 sequence로 이미지를 추가합니다.
+	 * @param imageId 이미지 고유 식별자
+	 * @param imageUrl 이미지 URL
+	 */
+	public void addRoomImage(String imageId, String imageUrl) {
+		long sequence = roomImages.size() + 1;
+		addRoomImageWithSequence(imageId, imageUrl, sequence);
+	}
+
+	/**
+	 * 기존 메소드 - 호환성 유지를 위해 보존
+	 * @deprecated addRoomImage(String, String) 또는 addRoomImageWithSequence 사용 권장
+	 */
+	@Deprecated
 	public void addRoomImage(RoomImage roomImage) {
 		if (roomImages.size() >= MAX_ROOM_IMAGES) {
 			throw new IllegalStateException(
@@ -119,7 +162,7 @@ public class RoomInfo {
 		roomImage.assignRoom(this);
 		roomImages.add(roomImage);
 	}
-	
+
 	public void removeRoomImage(RoomImage roomImage) {
 		roomImages.remove(roomImage);
 		roomImage.removeRoom();
