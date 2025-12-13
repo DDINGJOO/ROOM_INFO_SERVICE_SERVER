@@ -1,11 +1,13 @@
 package com.teambind.springproject.entity;
 
+import com.teambind.springproject.entity.attribute.ReservationField;
 import com.teambind.springproject.entity.attribute.StringBased.CautionDetail;
 import com.teambind.springproject.entity.attribute.StringBased.FurtherDetail;
 import com.teambind.springproject.entity.attribute.StringBased.Keyword;
 import com.teambind.springproject.entity.attribute.StringBased.StringAttribute;
 import com.teambind.springproject.entity.attribute.image.RoomImage;
 import com.teambind.springproject.entity.attribute.keyword.RoomOptionsMapper;
+import com.teambind.springproject.entity.enums.FieldType;
 import com.teambind.springproject.entity.enums.Status;
 import com.teambind.springproject.entity.enums.TimeSlot;
 import jakarta.persistence.*;
@@ -27,6 +29,7 @@ import java.util.List;
 public class RoomInfo {
 	
 	private static final int MAX_ROOM_IMAGES = 10;
+	private static final int MAX_RESERVATION_FIELDS = 10;
 	
 	@Id
 	@Column(name = "room_id")
@@ -65,8 +68,12 @@ public class RoomInfo {
 	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Builder.Default
 	private List<RoomOptionsMapper> roomOptions = new ArrayList<>();
-	
-	
+
+	@OneToMany(mappedBy = "roomInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<ReservationField> reservationFields = new ArrayList<>();
+
+
 	// 컬렉션 캡슐화 - 불변 컬렉션 반환
 	public List<FurtherDetail> getFurtherDetails() {
 		return Collections.unmodifiableList(furtherDetails);
@@ -83,8 +90,12 @@ public class RoomInfo {
 	public List<RoomOptionsMapper> getRoomOptions() {
 		return Collections.unmodifiableList(roomOptions);
 	}
-	
-	
+
+	public List<ReservationField> getReservationFields() {
+		return Collections.unmodifiableList(reservationFields);
+	}
+
+
 	// ===== FurtherDetail 관련 메서드 =====
 	public void addFurtherDetail(FurtherDetail detail) {
 		validateCanAddDetail(detail, furtherDetails.size());
@@ -188,7 +199,46 @@ public class RoomInfo {
 			return matches;
 		});
 	}
-	
+
+	// ===== ReservationField 관련 메서드 =====
+	public void addReservationField(String title, FieldType inputType,
+	                                Boolean required, Integer maxLength, Integer sequence) {
+		if (reservationFields.size() >= MAX_RESERVATION_FIELDS) {
+			throw new IllegalStateException(
+					String.format("예약 필드는 최대 %d개까지 추가할 수 있습니다.", MAX_RESERVATION_FIELDS)
+			);
+		}
+
+		int fieldSequence = sequence != null ? sequence : reservationFields.size() + 1;
+		ReservationField field = ReservationField.create(title, inputType, required, maxLength, fieldSequence);
+		field.assignRoom(this);
+		reservationFields.add(field);
+	}
+
+	public void addReservationField(ReservationField field) {
+		if (reservationFields.size() >= MAX_RESERVATION_FIELDS) {
+			throw new IllegalStateException(
+					String.format("예약 필드는 최대 %d개까지 추가할 수 있습니다.", MAX_RESERVATION_FIELDS)
+			);
+		}
+		field.assignRoom(this);
+		reservationFields.add(field);
+	}
+
+	public void removeReservationField(ReservationField field) {
+		reservationFields.remove(field);
+		field.removeRoom();
+	}
+
+	public void clearReservationFields() {
+		reservationFields.forEach(ReservationField::removeRoom);
+		reservationFields.clear();
+	}
+
+	public int getReservationFieldCount() {
+		return reservationFields.size();
+	}
+
 	// ===== 비즈니스 로직 (검증) =====
 	private void validateCanAddDetail(StringAttribute detail, int currentSize) {
 		int maxLimit = detail.getMaxLimit();
