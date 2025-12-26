@@ -201,8 +201,8 @@ public class RoomInfo {
 	}
 
 	// ===== ReservationField 관련 메서드 =====
-	public void addReservationField(String title, FieldType inputType,
-	                                Boolean required, Integer maxLength, Integer sequence) {
+	public ReservationField addReservationField(String title, FieldType inputType,
+	                                            Boolean required, Integer maxLength, Integer sequence) {
 		if (reservationFields.size() >= MAX_RESERVATION_FIELDS) {
 			throw new IllegalStateException(
 					String.format("예약 필드는 최대 %d개까지 추가할 수 있습니다.", MAX_RESERVATION_FIELDS)
@@ -213,6 +213,7 @@ public class RoomInfo {
 		ReservationField field = ReservationField.create(title, inputType, required, maxLength, fieldSequence);
 		field.assignRoom(this);
 		reservationFields.add(field);
+		return field;
 	}
 
 	public void addReservationField(ReservationField field) {
