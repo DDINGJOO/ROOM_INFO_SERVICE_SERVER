@@ -215,7 +215,47 @@ public class RoomInfo {
 		this.maxOccupancy = maxOccupancy;
 		validateMaxOccupancy();
 	}
-	
+
+	public void updateRoomName(String roomName) {
+		if (roomName != null && !roomName.isBlank()) {
+			this.roomName = roomName;
+		}
+	}
+
+	public void updateTimeSlot(TimeSlot timeSlot) {
+		if (timeSlot != null) {
+			this.timeSlot = timeSlot;
+		}
+	}
+
+	public void updateStatus(Status status) {
+		if (status != null) {
+			this.status = status;
+		}
+	}
+
+	public void closePendingRoom() {
+		if (this.status != Status.PENDING) {
+			throw new IllegalStateException("PENDING 상태의 룸만 CLOSE로 변경할 수 있습니다.");
+		}
+		this.status = Status.CLOSE;
+	}
+
+	public void clearFurtherDetails() {
+		this.furtherDetails.forEach(detail -> detail.removeRoom());
+		this.furtherDetails.clear();
+	}
+
+	public void clearCautionDetails() {
+		this.cautionDetails.forEach(detail -> detail.removeRoom());
+		this.cautionDetails.clear();
+	}
+
+	public void clearKeywords() {
+		this.roomOptions.forEach(mapper -> mapper.removeRoom());
+		this.roomOptions.clear();
+	}
+
 	public int getRoomImageCount() {
 		return roomImages.size();
 	}
