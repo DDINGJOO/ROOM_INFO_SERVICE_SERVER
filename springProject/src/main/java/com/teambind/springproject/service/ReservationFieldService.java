@@ -4,6 +4,7 @@ import com.teambind.springproject.dto.request.ReservationFieldRequest;
 import com.teambind.springproject.dto.response.ReservationFieldResponse;
 import com.teambind.springproject.entity.RoomInfo;
 import com.teambind.springproject.entity.attribute.ReservationField;
+import com.teambind.springproject.exception.RoomNotFoundException;
 import com.teambind.springproject.repository.ReservationFieldRepository;
 import com.teambind.springproject.repository.RoomCommandRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +30,27 @@ public class ReservationFieldService {
     }
 
     @Transactional
+    public ReservationFieldResponse addReservationField(Long roomId, ReservationFieldRequest request) {
+        RoomInfo roomInfo = roomCommandRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException(roomId));
+
+        ReservationField field = roomInfo.addReservationField(
+                request.getTitle(),
+                request.getInputType(),
+                request.getRequired(),
+                request.getMaxLength(),
+                request.getSequence()
+        );
+
+        roomCommandRepository.save(roomInfo);
+
+        return ReservationFieldResponse.from(field);
+    }
+
+    @Transactional
     public List<ReservationFieldResponse> replaceReservationFields(Long roomId, List<ReservationFieldRequest> requests) {
         RoomInfo roomInfo = roomCommandRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
+                .orElseThrow(() -> new RoomNotFoundException(roomId));
 
         roomInfo.clearReservationFields();
 
@@ -54,9 +73,25 @@ public class ReservationFieldService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteReservationField(Long roomId, Long fieldId) {
+        RoomInfo roomInfo = roomCommandRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException(roomId));
+
+        ReservationField field = reservationFieldRepository.findById(fieldId)
+                .orElseThrow(() -> new IllegalArgumentException("ReservationField not found: " + fieldId));
+
+        if (!field.getRoomInfo().getRoomId().equals(roomId)) {
+            throw new IllegalArgumentException("ReservationField does not belong to this room");
+        }
+
+        roomInfo.removeReservationField(field);
+        roomCommandRepository.save(roomInfo);
+    }
+
     private void validateRoomExists(Long roomId) {
         if (!roomCommandRepository.existsById(roomId)) {
-            throw new IllegalArgumentException("Room not found: " + roomId);
+            throw new RoomNotFoundException(roomId);
         }
     }
 }
