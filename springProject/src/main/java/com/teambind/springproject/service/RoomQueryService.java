@@ -5,6 +5,8 @@ import com.teambind.springproject.dto.response.KeywordResponse;
 import com.teambind.springproject.dto.response.RoomDetailResponse;
 import com.teambind.springproject.dto.response.RoomSimpleResponse;
 import com.teambind.springproject.entity.RoomInfo;
+import com.teambind.springproject.entity.enums.Status;
+import com.teambind.springproject.exception.RoomNotFoundException;
 import com.teambind.springproject.mapper.RoomQueryMapper;
 import com.teambind.springproject.repository.RoomQueryRepository;
 import com.teambind.springproject.util.data.InitialTableMapper;
@@ -28,15 +30,16 @@ public class RoomQueryService {
 		List<RoomInfo> rooms = roomQueryRepository.findAllByQuery(query);
 		return roomQueryMapper.toSimpleResponseList(rooms);
 	}
-	
-	public List<RoomSimpleResponse> findRoomsByPlaceId(Long placeId) {
+
+	public List<RoomSimpleResponse> findRoomsByPlaceId(Long placeId, Status status) {
 		RoomSearchQuery query = RoomSearchQuery.builder()
 				.placeId(placeId)
+				.status(status)
 				.build();
 		List<RoomInfo> rooms = roomQueryRepository.findAllByQuery(query);
 		return roomQueryMapper.toSimpleResponseList(rooms);
 	}
-	
+
 	public List<RoomSimpleResponse> findRoomsByName(String roomName) {
 		RoomSearchQuery query = RoomSearchQuery.builder()
 				.roomName(roomName)
@@ -44,7 +47,7 @@ public class RoomQueryService {
 		List<RoomInfo> rooms = roomQueryRepository.findAllByQuery(query);
 		return roomQueryMapper.toSimpleResponseList(rooms);
 	}
-	
+
 	public List<RoomSimpleResponse> findRoomsByKeywords(List<Long> keywordIds) {
 		RoomSearchQuery query = RoomSearchQuery.builder()
 				.keywordIds(keywordIds)
@@ -52,15 +55,23 @@ public class RoomQueryService {
 		List<RoomInfo> rooms = roomQueryRepository.findAllByQuery(query);
 		return roomQueryMapper.toSimpleResponseList(rooms);
 	}
-	
-	public List<RoomDetailResponse> findRoomsByIds(List<Long> roomIds) {
+
+	public List<RoomDetailResponse> findRoomsByIds(List<Long> roomIds, Status status) {
 		List<RoomInfo> rooms = roomQueryRepository.findByIdsWithDetails(roomIds);
+		if (status != null) {
+			rooms = rooms.stream()
+					.filter(room -> room.getStatus() == status)
+					.collect(Collectors.toList());
+		}
 		return roomQueryMapper.toDetailResponseList(rooms);
 	}
-	
-	public RoomDetailResponse findRoomById(Long roomId) {
+
+	public RoomDetailResponse findRoomById(Long roomId, Status requiredStatus) {
 		RoomInfo room = roomQueryRepository.findByIdWithDetails(roomId)
-				.orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+				.orElseThrow(() -> new RoomNotFoundException(roomId));
+		if (requiredStatus != null && room.getStatus() != requiredStatus) {
+			throw new RoomNotFoundException(roomId);
+		}
 		return roomQueryMapper.toDetailResponse(room);
 	}
 	
