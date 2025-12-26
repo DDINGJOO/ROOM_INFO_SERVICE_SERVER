@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.teambind.springproject.dto.query.RoomSearchQuery;
 import com.teambind.springproject.entity.RoomInfo;
+import com.teambind.springproject.entity.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +26,7 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 	@Override
 	public List<RoomInfo> findAllByQuery(RoomSearchQuery query) {
 		List<Long> roomIds;
-		
+
 		if (query.getKeywordIds() != null && !query.getKeywordIds().isEmpty()) {
 			roomIds = queryFactory
 					.select(roomInfo.roomId)
@@ -36,6 +37,7 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 							placeIdEq(query.getPlaceId()),
 							roomIdsIn(query.getRoomIds()),
 							minOccupancyGoe(query.getMinOccupancy()),
+							statusEq(query.getStatus()),
 							roomOptionsMapper.keyword.keywordId.in(query.getKeywordIds())
 					)
 					.groupBy(roomInfo.roomId)
@@ -49,15 +51,16 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 							roomNameContains(query.getRoomName()),
 							placeIdEq(query.getPlaceId()),
 							roomIdsIn(query.getRoomIds()),
-							minOccupancyGoe(query.getMinOccupancy())
+							minOccupancyGoe(query.getMinOccupancy()),
+							statusEq(query.getStatus())
 					)
 					.fetch();
 		}
-		
+
 		if (roomIds.isEmpty()) {
 			return List.of();
 		}
-		
+
 		return fetchRoomsWithAllDetails(roomIds);
 	}
 	
@@ -122,5 +125,9 @@ public class RoomQueryRepositoryImpl implements RoomQueryRepository {
 
 	private BooleanExpression minOccupancyGoe(Integer minOccupancy) {
 		return minOccupancy != null ? roomInfo.maxOccupancy.goe(minOccupancy) : null;
+	}
+
+	private BooleanExpression statusEq(Status status) {
+		return status != null ? roomInfo.status.eq(status) : null;
 	}
 }
