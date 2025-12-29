@@ -1,0 +1,73 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+*.iml
+*.iws
+*.ipr
+.vscode
+.settings
+.project
+.classpath
+
+# Build directories
+build/
+out/
+target/
+bin/
+
+# Gradle files (except wrapper)
+.gradle/
+gradle/daemon/
+gradle/native/
+# Keep gradle-wrapper.jar for building
+
+# Test and documentation
+docs/
+*.md
+LICENSE
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Scripts
+*.sh
+Makefile
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test reports
+test-results/
+test-output/
+
+# Node modules (if any frontend exists)
+node_modules/
+
+# Package files
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual environment
+venv/
+.venv/
