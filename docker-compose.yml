@@ -3,7 +3,7 @@ version: '3.8'
 services:
   room-info-server:
     container_name: room-info-server
-    image: ddingsh9/roominfoserver:1.0.0
+    image: ddingsh9/roominfoserver:latest
     networks:
       - infra-network
     environment:
@@ -28,14 +28,17 @@ services:
       # Redis Configuration (infra-network 내부 호스트명 사용)
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:}
 
       # Logging
       - LOG_LEVEL=INFO
       - SQL_LOG_LEVEL=WARN
+
+      # Place Info Service Configuration
+      - PLACE_INFO_URL=http://teambind.co.kr
+      - PLACE_INFO_PORT=9412
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -54,7 +57,7 @@ services:
       - room-info-server
     restart: unless-stopped
     healthcheck:
-      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/actuator/health" ]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
