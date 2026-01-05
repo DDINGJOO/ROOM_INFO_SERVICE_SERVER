@@ -383,7 +383,8 @@ PATCH /api/rooms/{roomId}/close
 **설명**
 
 - PENDING 상태의 룸만 CLOSE로 변경 가능
-- X-App-Type 헤더 선택적 (GENERAL도 허용)
+- X-App-Type: PLACE_MANAGER 필수
+- 해당 Place 소유자만 종료 가능 (소유권 검증)
 
 #### 룸 삭제
 
@@ -676,7 +677,7 @@ stateDiagram-v2
 | 룸 수정         | X       | O             |
 | 룸 삭제         | X       | O             |
 | 룸 상태 변경      | X       | O             |
-| PENDING 룸 종료 | O       | O             |
+| PENDING 룸 종료 | X       | O             |
 | OPEN 룸 조회    | O       | O             |
 | 모든 상태 룸 조회   | X       | O             |
 | 예약 필드 관리     | X       | O             |
@@ -857,6 +858,9 @@ volumes:
 
 ### Phase 4 - 고도화 (진행 중)
 
+- [x] AOP 기반 권한 검증 (@RequireRoomManager, @ValidateRoomOwnership)
+- [x] Swagger 인터페이스 분리
+- [x] Place Info 서비스 연동 (소유권 검증)
 - [ ] 이미지 서버 연동
 - [ ] Redis 캐싱
 - [ ] API Gateway 연동
@@ -879,17 +883,46 @@ Room Info Server는 분산 환경에서 고유 ID를 생성하기 위해 Snowfla
 - **시간순 정렬**: timestamp 기반으로 자연 정렬 가능
 - **JavaScript 호환**: String으로 변환하여 Number 정밀도 손실 방지
 
-### 10.2 X-App-Type 기반 접근 제어
+### 10.2 X-App-Type 기반 접근 제어 (AOP)
+
+AOP를 활용하여 선언적 권한 검증을 수행한다.
+
+#### 어노테이션
+
+| 어노테이션                  | 역할                                  |
+|------------------------|-------------------------------------|
+| @RequireRoomManager    | PLACE_MANAGER 앱 타입 + X-User-Id 필수   |
+| @ValidateRoomOwnership | Room → Place 소유권 검증 (Place Info 연동) |
+
+#### 적용 흐름
 
 ```mermaid
 flowchart TD
-    A[API 요청] --> B{X-App-Type 헤더}
-    B -->|PLACE_MANAGER| C{Command API?}
-    C -->|Yes| D[허용]
-    C -->|No| E[허용 + 모든 상태 조회]
-    B -->|GENERAL/없음| F{Command API?}
-    F -->|Yes| G[403 Forbidden]
-    F -->|No| H[허용 + OPEN만 조회]
+    A[API 요청] --> B{@RequireRoomManager?}
+B -->|Yes|C[X-App-Type 검증]
+C -->|PLACE_MANAGER|D{@ValidateRoomOwnership?}
+C -->|Other| E[403 Forbidden]
+D -->|Yes|F[Place Info 서비스 호출]
+F --> G{소유자 일치?}
+G -->|Yes|H[컨트롤러 실행]
+G -->|No|I[403 Forbidden]
+D -->|No|H
+B -->|No|H
+```
+
+#### Swagger 인터페이스 분리
+
+컨트롤러와 Swagger 문서화를 분리하여 관리한다.
+
+```
+controller/
+├── swagger/
+│   ├── RoomCommandControllerSwagger.java    # Swagger 어노테이션 정의
+│   ├── RoomQueryControllerSwagger.java
+│   └── ReservationFieldControllerSwagger.java
+├── RoomCommandController.java               # implements Swagger 인터페이스
+├── RoomQueryController.java
+└── ReservationFieldController.java
 ```
 
 ### 10.3 이미지 처리
@@ -901,5 +934,5 @@ flowchart TD
 ---
 
 **버전**: 0.0.1-SNAPSHOT
-**최종 업데이트**: 2025-01-20
+**최종 업데이트**: 2025-01-05
 **팀**: TeamBind Development Team
