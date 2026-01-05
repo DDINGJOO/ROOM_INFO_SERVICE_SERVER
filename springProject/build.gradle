@@ -48,6 +48,12 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Swagger (SpringDoc OpenAPI)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor "com.querydsl:querydsl-apt:${querydslVersion}:jakarta"

@@ -1,14 +1,17 @@
 package com.teambind.springproject.controller;
 
+import com.teambind.springproject.controller.annotation.RequireRoomManager;
+import com.teambind.springproject.controller.annotation.ValidateRoomOwnership;
 import com.teambind.springproject.dto.command.RoomCreateCommand;
 import com.teambind.springproject.dto.command.RoomUpdateCommand;
 import com.teambind.springproject.dto.request.RoomCreateRequest;
 import com.teambind.springproject.dto.request.RoomUpdateRequest;
-import com.teambind.springproject.entity.enums.AppType;
 import com.teambind.springproject.entity.enums.Status;
-import com.teambind.springproject.exception.ForbiddenException;
-import com.teambind.springproject.exception.InvalidRequestException;
 import com.teambind.springproject.service.RoomCommandService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,48 +23,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/rooms")
 @RequiredArgsConstructor
+@Tag(name = "Room Command", description = "룸 등록/수정/삭제 API (PLACE_MANAGER 전용)")
 public class RoomCommandController {
 
-	private static final String HEADER_APP_TYPE = "X-App-Type";
 	private static final String HEADER_USER_ID = "X-User-Id";
 
 	private final RoomCommandService roomCommandService;
 
-	private AppType parseAppType(String appTypeHeader) {
-		if (appTypeHeader == null || appTypeHeader.isBlank()) {
-			throw InvalidRequestException.headerMissing(HEADER_APP_TYPE);
-		}
-		try {
-			return AppType.valueOf(appTypeHeader);
-		} catch (IllegalArgumentException e) {
-			throw InvalidRequestException.invalidFormat(HEADER_APP_TYPE);
-		}
-	}
-
-	private AppType parseAppTypeOptional(String appTypeHeader) {
-		if (appTypeHeader == null || appTypeHeader.isBlank()) {
-			return AppType.GENERAL;
-		}
-		try {
-			return AppType.valueOf(appTypeHeader);
-		} catch (IllegalArgumentException e) {
-			return AppType.GENERAL;
-		}
-	}
-
-	private void validatePlaceManagerApp(AppType appType) {
-		if (appType != AppType.PLACE_MANAGER) {
-			throw ForbiddenException.placeManagerOnly();
-		}
-	}
-
 	@PostMapping
+	@RequireRoomManager
+	@ValidateRoomOwnership(placeIdSource = "body")
+	@Operation(summary = "룸 생성", description = "새로운 룸을 등록합니다")
+	@ApiResponse(responseCode = "201", description = "생성 성공")
+	@ApiResponse(responseCode = "400", description = "잘못된 요청")
+	@ApiResponse(responseCode = "403", description = "권한 없음")
 	public ResponseEntity<Long> createRoom(
-			@RequestHeader(value = HEADER_APP_TYPE, required = false) String appTypeHeader,
-			@RequestHeader(value = HEADER_USER_ID, required = false) String userId,
+			@RequestHeader(value = HEADER_USER_ID) String userId,
 			@Valid @RequestBody RoomCreateRequest request
 	) {
-		validatePlaceManagerApp(parseAppType(appTypeHeader));
 		log.info("룸 생성 요청: userId={}", userId);
 
 		RoomCreateCommand command = RoomCreateCommand.builder()
@@ -79,13 +58,18 @@ public class RoomCommandController {
 	}
 
 	@PutMapping("/{roomId}")
+	@RequireRoomManager
+	@ValidateRoomOwnership
+	@Operation(summary = "룸 수정", description = "룸 정보를 수정합니다")
+	@ApiResponse(responseCode = "200", description = "수정 성공")
+	@ApiResponse(responseCode = "400", description = "잘못된 요청")
+	@ApiResponse(responseCode = "403", description = "권한 없음")
+	@ApiResponse(responseCode = "404", description = "존재하지 않는 룸")
 	public ResponseEntity<Long> updateRoom(
-			@RequestHeader(value = HEADER_APP_TYPE, required = false) String appTypeHeader,
-			@RequestHeader(value = HEADER_USER_ID, required = false) String userId,
-			@PathVariable Long roomId,
+			@RequestHeader(value = HEADER_USER_ID) String userId,
+			@Parameter(description = "룸 ID", required = true) @PathVariable Long roomId,
 			@Valid @RequestBody RoomUpdateRequest request
 	) {
-		validatePlaceManagerApp(parseAppType(appTypeHeader));
 		log.info("룸 수정 요청: roomId={}, userId={}", roomId, userId);
 
 		RoomUpdateCommand command = RoomUpdateCommand.builder()
@@ -102,13 +86,18 @@ public class RoomCommandController {
 	}
 
 	@PatchMapping("/{roomId}/status")
+	@RequireRoomManager
+	@ValidateRoomOwnership
+	@Operation(summary = "룸 상태 변경", description = "룸의 활성화/비활성화 상태를 변경합니다")
+	@ApiResponse(responseCode = "200", description = "상태 변경 성공")
+	@ApiResponse(responseCode = "400", description = "잘못된 요청")
+	@ApiResponse(responseCode = "403", description = "권한 없음")
+	@ApiResponse(responseCode = "404", description = "존재하지 않는 룸")
 	public ResponseEntity<Long> updateRoomStatus(
-			@RequestHeader(value = HEADER_APP_TYPE, required = false) String appTypeHeader,
-			@RequestHeader(value = HEADER_USER_ID, required = false) String userId,
-			@PathVariable Long roomId,
-			@RequestParam Status status
+			@RequestHeader(value = HEADER_USER_ID) String userId,
+			@Parameter(description = "룸 ID", required = true) @PathVariable Long roomId,
+			@Parameter(description = "변경할 상태", required = true) @RequestParam Status status
 	) {
-		validatePlaceManagerApp(parseAppType(appTypeHeader));
 		log.info("룸 상태 변경 요청: roomId={}, status={}, userId={}", roomId, status, userId);
 
 		Long updatedRoomId = roomCommandService.updateRoomStatus(roomId, status);
@@ -116,12 +105,17 @@ public class RoomCommandController {
 	}
 
 	@PatchMapping("/{roomId}/close")
+	@RequireRoomManager
+	@ValidateRoomOwnership
+	@Operation(summary = "PENDING 룸 종료", description = "PENDING 상태의 룸을 CLOSE로 변경합니다")
+	@ApiResponse(responseCode = "200", description = "종료 성공")
+	@ApiResponse(responseCode = "400", description = "PENDING 상태가 아닌 룸")
+	@ApiResponse(responseCode = "403", description = "권한 없음")
+	@ApiResponse(responseCode = "404", description = "존재하지 않는 룸")
 	public ResponseEntity<Long> closePendingRoom(
-			@RequestHeader(value = HEADER_APP_TYPE, required = false) String appTypeHeader,
-			@RequestHeader(value = HEADER_USER_ID, required = false) String userId,
-			@PathVariable Long roomId
+			@RequestHeader(value = HEADER_USER_ID) String userId,
+			@Parameter(description = "룸 ID", required = true) @PathVariable Long roomId
 	) {
-		parseAppTypeOptional(appTypeHeader);
 		log.info("PENDING 룸 종료 요청: roomId={}, userId={}", roomId, userId);
 
 		Long closedRoomId = roomCommandService.closePendingRoom(roomId);
@@ -129,12 +123,16 @@ public class RoomCommandController {
 	}
 
 	@DeleteMapping("/{roomId}")
+	@RequireRoomManager
+	@ValidateRoomOwnership
+	@Operation(summary = "룸 삭제", description = "룸을 삭제합니다")
+	@ApiResponse(responseCode = "200", description = "삭제 성공")
+	@ApiResponse(responseCode = "403", description = "권한 없음")
+	@ApiResponse(responseCode = "404", description = "존재하지 않는 룸")
 	public ResponseEntity<Long> deleteRoom(
-			@RequestHeader(value = HEADER_APP_TYPE, required = false) String appTypeHeader,
-			@RequestHeader(value = HEADER_USER_ID, required = false) String userId,
-			@PathVariable Long roomId
+			@RequestHeader(value = HEADER_USER_ID) String userId,
+			@Parameter(description = "룸 ID", required = true) @PathVariable Long roomId
 	) {
-		validatePlaceManagerApp(parseAppType(appTypeHeader));
 		log.info("룸 삭제 요청: roomId={}, userId={}", roomId, userId);
 
 		Long deletedRoomId = roomCommandService.deleteRoom(roomId);
